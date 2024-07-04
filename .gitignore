@@ -38,3 +38,4 @@ out/
 
 ### MISC ###
 *.drawio*
+.env
