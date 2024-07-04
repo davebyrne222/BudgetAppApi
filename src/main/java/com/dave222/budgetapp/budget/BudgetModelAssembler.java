@@ -1,7 +1,6 @@
 package com.dave222.budgetapp.budget;
 
 import com.dave222.budgetapp.budget.enums.State;
-import com.dave222.budgetapp.budget.enums.Status;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
