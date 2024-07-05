@@ -6,6 +6,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
@@ -16,12 +18,21 @@ import java.time.LocalDateTime;
 public class Transaction {
 
     private @Id @GeneratedValue Long id;
+
+    @NotNull(message = "budgetId is mandatory")
     private Long budgetId;
+
+    @NotNull(message = "transactionDate is mandatory")
+    private LocalDateTime transactionDate;
+
+    @NotNull(message = "amount is mandatory")
+    private BigDecimal amount;
+
+    @Size(max=255, message = "description can not be more than 255 characters")
+    private String description;
+
     private Long categoryId;
     private Long accountId;
-    private LocalDateTime transactionDate;
-    private String description; // how to limit number of chars?
-    private BigDecimal amount;
     private String note;
     private LocalDateTime created;
     private LocalDateTime updated;

@@ -1,5 +1,6 @@
 package com.dave222.budgetapp.transaction;
 
+import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ class TransactionController {
 
     // Create
     @PostMapping("/transactions")
-    ResponseEntity<EntityModel<Transaction>> newBudget(@RequestBody Transaction transaction) {
+    ResponseEntity<EntityModel<Transaction>> newBudget(@RequestBody @Valid Transaction transaction) {
 
         Transaction newTransaction = transactionRepository.save(transaction);
 
@@ -57,7 +58,7 @@ class TransactionController {
 
     // Update
     @PutMapping("/transactions/{id}")
-    ResponseEntity<?> update(@RequestBody Transaction newTransaction, @PathVariable Long id) {
+    ResponseEntity<?> update(@RequestBody @Valid Transaction newTransaction, @PathVariable Long id) {
 
         Transaction transaction = transactionRepository.findById(id)
                 .orElseThrow(() -> new TransactionNotFoundException(id));

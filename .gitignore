@@ -39,3 +39,4 @@ out/
 ### MISC ###
 *.drawio*
 .env
+todo.md
