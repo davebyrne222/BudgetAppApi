@@ -1,6 +1,7 @@
 package com.dave222.budgetapp.budget;
 
 import com.dave222.budgetapp.budget.enums.State;
+import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
@@ -30,7 +31,9 @@ class BudgetController {
 
     // Create
     @PostMapping("/budgets")
-    ResponseEntity<EntityModel<Budget>> newBudget(@RequestBody Budget budget) {
+    ResponseEntity<EntityModel<Budget>> newBudget(@Valid @RequestBody Budget budget) {
+
+        System.out.println("Request body: " + budget.toString());
 
         Budget newBudget = budgetRepository.save(budget);
 
@@ -62,7 +65,7 @@ class BudgetController {
 
     // Update
     @PutMapping("/budgets/{id}")
-    ResponseEntity<?> update(@RequestBody Budget newBudget, @PathVariable Long id) {
+    ResponseEntity<?> update(@Valid @RequestBody Budget newBudget, @PathVariable Long id) {
 
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new BudgetNotFoundException(id));
