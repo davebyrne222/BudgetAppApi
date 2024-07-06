@@ -20,8 +20,6 @@ public class CorsConfig {
 
         config.addAllowedOrigin(allowedOrigin); // Production domain
 
-        System.out.println(allowedOrigin + "  http://localhost:3000");
-
         config.setAllowCredentials(true);
         config.addAllowedHeader("Content-Type");
         config.addAllowedHeader("Authorization");
