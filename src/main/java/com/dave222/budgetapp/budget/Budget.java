@@ -2,12 +2,11 @@ package com.dave222.budgetapp.budget;
 
 import com.dave222.budgetapp.budget.enums.State;
 import com.dave222.budgetapp.budget.enums.Status;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
@@ -18,9 +17,26 @@ import java.util.Objects;
 @EntityListeners(AuditingEntityListener.class)
 public class Budget {
 
-    private @Id @GeneratedValue Long id;
+    // User defined
+    @NotNull(message = "name is mandatory")
+    @Size(max = 255, message = "name max-length is 255 characters")
     private String name;
+
+    @NotNull(message = "startDate is mandatory")
+    private LocalDateTime startDate;
+
+    @NotNull(message = "startBalance is mandatory")
+    private BigDecimal startBalance;
+
+    private LocalDateTime endDate;
+    private BigDecimal targetBalance;
     private String description;
+
+    // Todo: categories; create separate entity for categories and define categories as HashMap<String, category> (?)
+    // Todo: accounts
+
+    // system managed
+    private @Id @GeneratedValue Long id;
     private Status status = Status.BALANCED;
     private State state = State.ACTIVE;
     private LocalDateTime created;
@@ -43,9 +59,13 @@ public class Budget {
 
     protected Budget() {}
 
-    public Budget(String name, String description) {
+    public Budget(String name, String description, LocalDateTime startDate, BigDecimal startBalance, LocalDateTime endDate, BigDecimal targetBalance) {
         this.name = name;
         this.description = description;
+        this.startDate = startDate;
+        this.startBalance = startBalance;
+        this.endDate = endDate;
+        this.targetBalance = targetBalance;
     }
 
     // ID
@@ -114,6 +134,44 @@ public class Budget {
 
     public void setTotalOutgoing(BigDecimal totalOutgoing) { this.totalOutgoing = totalOutgoing; }
 
+    // Start date
+    public LocalDateTime getStartDate(){
+        return this.startDate;
+    };
+
+    public void setStartDate(LocalDateTime startDate){
+        this.startDate = startDate;
+    };
+
+    // Start balance
+    public BigDecimal getStartBalance(){
+        return this.startBalance;
+    };
+
+    public void setStartBalance(BigDecimal startBalance){
+        this.startBalance = startBalance;
+    };
+
+    // End date
+    public LocalDateTime getEndDate(){
+        return this.endDate;
+    };
+
+    public void setEndDate(LocalDateTime endDate){
+        this.endDate = endDate;
+    };
+
+    // Target Balance
+    public BigDecimal getTargetBalance(){
+        return this.targetBalance;
+    };
+
+    public void setTargetBalance(BigDecimal targetBalance){
+        this.targetBalance = targetBalance;
+    };
+
+
+
     // Utils
     @Override
     public boolean equals(Object o) {
@@ -129,5 +187,10 @@ public class Budget {
         return Objects.equals(this.id, budget.id)
                 && Objects.equals(this.description, budget.description)
                 && this.status == budget.status;
+    }
+
+    @Override
+    public String toString(){
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
     }
 }

@@ -1,6 +1,7 @@
 package com.dave222.budgetapp.budget;
 
 import com.dave222.budgetapp.budget.enums.State;
+import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
@@ -20,51 +21,51 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 class BudgetController {
 
     private final BudgetRepository budgetRepository;
-    private final BudgetModelAssembler assembler;
     private final BudgetModelAssembler budgetModelAssembler;
 
-    BudgetController(BudgetRepository budgetRepository, BudgetModelAssembler assembler, BudgetModelAssembler budgetModelAssembler) {
+    BudgetController(BudgetRepository budgetRepository, BudgetModelAssembler budgetModelAssembler) {
 
         this.budgetRepository = budgetRepository;
-        this.assembler = assembler;
         this.budgetModelAssembler = budgetModelAssembler;
     }
 
     // Create
     @PostMapping("/budgets")
-    ResponseEntity<EntityModel<Budget>> newBudget(@RequestBody Budget budget) {
+    ResponseEntity<EntityModel<Budget>> newBudget(@Valid @RequestBody Budget budget) {
+
+        System.out.println("Request body: " + budget.toString());
 
         Budget newBudget = budgetRepository.save(budget);
 
         return ResponseEntity
                 .created(linkTo(methodOn(BudgetController.class).one(newBudget.getId())).toUri())
-                .body(assembler.toModel(newBudget));
+                .body(budgetModelAssembler.toModel(newBudget));
     }
 
     // Read
     @GetMapping("/budgets")
     CollectionModel<EntityModel<Budget>> all() {
 
-        List<EntityModel<Budget>> orders = budgetRepository.findAll().stream()
-                .map(assembler::toModel)
+        List<EntityModel<Budget>> budgets = budgetRepository.findAll().stream()
+                .map(budgetModelAssembler::toModel)
                 .collect(Collectors.toList());
 
-        return CollectionModel.of(orders,
+        return CollectionModel.of(budgets,
                 linkTo(methodOn(BudgetController.class).all()).withSelfRel());
     }
 
     @GetMapping("/budgets/{id}")
     EntityModel<Budget> one(@PathVariable Long id) {
 
-        Budget order = budgetRepository.findById(id)
+        Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new BudgetNotFoundException(id));
 
-        return assembler.toModel(order);
+        return budgetModelAssembler.toModel(budget);
     }
 
     // Update
     @PutMapping("/budgets/{id}")
-    ResponseEntity<?> update(@RequestBody Budget newBudget, @PathVariable Long id) {
+    ResponseEntity<?> update(@Valid @RequestBody Budget newBudget, @PathVariable Long id) {
 
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new BudgetNotFoundException(id));
@@ -87,7 +88,7 @@ class BudgetController {
         // Replace old budget with new:
         newBudget.setId(budget.getId());
 
-        return ResponseEntity.ok(assembler.toModel(budgetRepository.save(newBudget)));
+        return ResponseEntity.ok(budgetModelAssembler.toModel(budgetRepository.save(newBudget)));
 
     }
 
@@ -132,7 +133,7 @@ class BudgetController {
     }
 
     // Delete
-    @DeleteMapping("/budget/{id}/delete")
+    @DeleteMapping("/budgets/{id}/delete")
     ResponseEntity<?> delete(@PathVariable Long id) {
 
        if (!budgetRepository.existsById(id)) {
