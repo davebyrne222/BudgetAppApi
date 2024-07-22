@@ -33,8 +33,6 @@ class BudgetController {
     @PostMapping("/budgets")
     ResponseEntity<EntityModel<Budget>> newBudget(@Valid @RequestBody Budget budget) {
 
-        System.out.println("Request body: " + budget.toString());
-
         Budget newBudget = budgetRepository.save(budget);
 
         return ResponseEntity
@@ -70,7 +68,6 @@ class BudgetController {
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new BudgetNotFoundException(id));
 
-        // Cannot update archived budget
         if (budget.getState() != State.ACTIVE){
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
@@ -84,9 +81,6 @@ class BudgetController {
         if (budget.equals(newBudget)) {
             return ResponseEntity.noContent().build();
         }
-
-        // Replace old budget with new:
-        newBudget.setId(budget.getId());
 
         return ResponseEntity.ok(budgetModelAssembler.toModel(budgetRepository.save(newBudget)));
 
