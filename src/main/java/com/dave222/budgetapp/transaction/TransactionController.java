@@ -6,89 +6,43 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@RequestMapping("/budget/{budgetId}/transactions")
 class TransactionController {
 
-    private final TransactionRepository transactionRepository;
-    private final TransactionModelAssembler transactionModelAssembler;
+    private final TransactionService transactionService;
 
-    TransactionController(TransactionRepository transactionRepository, TransactionModelAssembler transactionModelAssembler) {
-
-        this.transactionRepository = transactionRepository;
-        this.transactionModelAssembler = transactionModelAssembler;
+    TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     // Create
-    @PostMapping("/transactions")
-    ResponseEntity<EntityModel<Transaction>> newBudget(@RequestBody @Valid Transaction transaction) {
-
-        Transaction newTransaction = transactionRepository.save(transaction);
-
-        return ResponseEntity
-                .created(linkTo(methodOn(TransactionController.class).one(newTransaction.getId())).toUri())
-                .body(transactionModelAssembler.toModel(newTransaction));
+    @PostMapping("/")
+    ResponseEntity<EntityModel<Transaction>> create(@PathVariable Long budgetId, @RequestBody @Valid Transaction transaction) {
+        return transactionService.create(budgetId, transaction);
     }
 
     // Read
-    @GetMapping("/transactions")
-    CollectionModel<EntityModel<Transaction>> all() {
-
-        List<EntityModel<Transaction>> transactions = transactionRepository.findAll().stream()
-                .map(transactionModelAssembler::toModel)
-                .collect(Collectors.toList());
-
-        return CollectionModel.of(transactions,
-                linkTo(methodOn(TransactionController.class).all()).withSelfRel());
+    @GetMapping("/")
+    CollectionModel<EntityModel<Transaction>> getAll(@PathVariable Long budgetId) {
+        return transactionService.getAll(budgetId);
     }
 
-    @GetMapping("/transactions/{id}")
-    EntityModel<Transaction> one(@PathVariable Long id) {
-
-        Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new TransactionNotFoundException(id));
-
-        return transactionModelAssembler.toModel(transaction);
+    @GetMapping("/{transactionId}")
+    EntityModel<Transaction> getOne(@PathVariable Long budgetId, @PathVariable Long transactionId) {
+        return transactionService.getOne(budgetId, transactionId);
     }
 
     // Update
-    @PutMapping("/transactions/{id}")
-    ResponseEntity<?> update(@RequestBody @Valid Transaction newTransaction, @PathVariable Long id) {
-
-        Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new TransactionNotFoundException(id));
-
-        // No difference between stored and new transaction
-        if (transaction.equals(newTransaction)) {
-            return ResponseEntity.noContent().build();
-        }
-
-        // Replace old transaction with new:
-        newTransaction.setId(transaction.getId());
-
-        return ResponseEntity.ok(transactionModelAssembler.toModel(transactionRepository.save(newTransaction)));
-
+    @PutMapping("/{transactionId}")
+    ResponseEntity<?> update(@PathVariable Long budgetId, @PathVariable Long transactionId, @RequestBody @Valid Transaction newTransaction) {
+        return transactionService.update(budgetId, transactionId, newTransaction);
     }
 
     // Delete
-    @DeleteMapping("/transactions/{id}")
-    ResponseEntity<?> delete(@PathVariable Long id) {
-
-       if (!transactionRepository.existsById(id)) {
-           throw new TransactionNotFoundException(id);
-       }
-
-       transactionRepository.deleteById(id);
-        /*
-        TODO: Delete transactions
-        https://howtodoinjava.com/hibernate/hibernate-jpa-cascade-types/
-        transactionRepository.deleteById(id);
-        */
-
-        return ResponseEntity.ok("Transaction deleted");
+    @DeleteMapping("/{transactionId}")
+    ResponseEntity<?> delete(@PathVariable Long budgetId, @PathVariable Long transactionId) {
+        return transactionService.delete(budgetId, transactionId);
     }}
