@@ -63,7 +63,7 @@ class BudgetController {
 
     // Update
     @PutMapping("/{id}")
-    ResponseEntity<?> update(@Valid @RequestBody Budget newBudget, @PathVariable Long id) {
+    ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody Budget newBudget) {
 
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new BudgetNotFoundException(id));
