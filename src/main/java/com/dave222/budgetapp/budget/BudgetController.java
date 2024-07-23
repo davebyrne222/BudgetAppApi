@@ -56,6 +56,18 @@ public class BudgetController {
                 linkTo(methodOn(BudgetController.class).all()).withSelfRel());
     }
 
+    @GetMapping("/latest")
+    CollectionModel<EntityModel<Budget>> latest() {
+
+        List<EntityModel<Budget>> budgets = budgetRepository.findFirst5ByOrderByUpdatedDesc()
+                .stream()
+                .map(budgetModelAssembler::toModel)
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(budgets,
+                linkTo(methodOn(BudgetController.class).latest()).withSelfRel());
+    }
+
     @GetMapping("/{id}")
     EntityModel<Budget> one(@PathVariable Long id) {
 
