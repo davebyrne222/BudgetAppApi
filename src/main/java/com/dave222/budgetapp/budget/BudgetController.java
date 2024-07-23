@@ -18,19 +18,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
+@RequestMapping("/budget")
 class BudgetController {
 
     private final BudgetRepository budgetRepository;
     private final BudgetModelAssembler budgetModelAssembler;
 
     BudgetController(BudgetRepository budgetRepository, BudgetModelAssembler budgetModelAssembler) {
-
         this.budgetRepository = budgetRepository;
         this.budgetModelAssembler = budgetModelAssembler;
     }
 
     // Create
-    @PostMapping("/budgets")
+    @PostMapping("/")
     ResponseEntity<EntityModel<Budget>> newBudget(@Valid @RequestBody Budget budget) {
 
         Budget newBudget = budgetRepository.save(budget);
@@ -41,7 +41,7 @@ class BudgetController {
     }
 
     // Read
-    @GetMapping("/budgets")
+    @GetMapping("/")
     CollectionModel<EntityModel<Budget>> all() {
 
         List<EntityModel<Budget>> budgets = budgetRepository.findAll().stream()
@@ -52,7 +52,7 @@ class BudgetController {
                 linkTo(methodOn(BudgetController.class).all()).withSelfRel());
     }
 
-    @GetMapping("/budgets/{id}")
+    @GetMapping("/{id}")
     EntityModel<Budget> one(@PathVariable Long id) {
 
         Budget budget = budgetRepository.findById(id)
@@ -62,7 +62,7 @@ class BudgetController {
     }
 
     // Update
-    @PutMapping("/budgets/{id}")
+    @PutMapping("/{id}")
     ResponseEntity<?> update(@Valid @RequestBody Budget newBudget, @PathVariable Long id) {
 
         Budget budget = budgetRepository.findById(id)
@@ -86,7 +86,7 @@ class BudgetController {
 
     }
 
-    @PutMapping("/budgets/{id}/archive")
+    @PutMapping("/{id}/archive")
     ResponseEntity<?> archive(@PathVariable Long id) {
 
         Budget budget = budgetRepository.findById(id)
@@ -106,7 +106,7 @@ class BudgetController {
                         .withDetail("You can't archive a budget that is in the " + budget.getState() + " state"));
     }
 
-    @PutMapping("/budgets/{id}/dearchive")
+    @PutMapping("/{id}/dearchive")
     ResponseEntity<?> dearchive(@PathVariable Long id) {
 
         Budget budget = budgetRepository.findById(id)
@@ -127,7 +127,7 @@ class BudgetController {
     }
 
     // Delete
-    @DeleteMapping("/budgets/{id}/delete")
+    @DeleteMapping("/{id}/delete")
     ResponseEntity<?> delete(@PathVariable Long id) {
 
        if (!budgetRepository.existsById(id)) {
