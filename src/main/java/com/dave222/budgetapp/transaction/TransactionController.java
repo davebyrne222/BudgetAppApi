@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @RestController
-@RequestMapping("/budget/{budgetId}/transactions")
+@RequestMapping("/transactions")
 class TransactionController {
 
     private final TransactionService transactionService;
@@ -20,29 +20,29 @@ class TransactionController {
 
     // Create
     @PostMapping("/")
-    ResponseEntity<EntityModel<Transaction>> create(@PathVariable Long budgetId, @RequestBody @Valid Transaction transaction) {
-        return transactionService.create(budgetId, transaction);
+    ResponseEntity<EntityModel<Transaction>> create(@RequestBody @Valid Transaction transaction) {
+        return transactionService.create(transaction);
     }
 
     // Read
     @GetMapping("/")
-    CollectionModel<EntityModel<Transaction>> getAll(@PathVariable Long budgetId) {
-        return transactionService.getAll(budgetId);
+    CollectionModel<EntityModel<Transaction>> getAll() {
+        return transactionService.getAll();
     }
 
     @GetMapping("/{transactionId}")
-    EntityModel<Transaction> getOne(@PathVariable Long budgetId, @PathVariable Long transactionId) {
-        return transactionService.getOne(budgetId, transactionId);
+    EntityModel<Transaction> getOne(@PathVariable Long transactionId) {
+        return transactionService.getOne(transactionId);
     }
 
     // Update
     @PutMapping("/{transactionId}")
-    ResponseEntity<?> update(@PathVariable Long budgetId, @PathVariable Long transactionId, @RequestBody @Valid Transaction newTransaction) {
-        return transactionService.update(budgetId, transactionId, newTransaction);
+    ResponseEntity<?> update(@PathVariable Long transactionId, @RequestBody @Valid Transaction newTransaction) {
+        return transactionService.update(transactionId, newTransaction);
     }
 
     // Delete
     @DeleteMapping("/{transactionId}")
-    ResponseEntity<?> delete(@PathVariable Long budgetId, @PathVariable Long transactionId) {
-        return transactionService.delete(budgetId, transactionId);
+    ResponseEntity<?> delete(@PathVariable Long transactionId) {
+        return transactionService.delete(transactionId);
     }}

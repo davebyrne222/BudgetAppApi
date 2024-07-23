@@ -1,6 +1,8 @@
 package com.dave222.budgetapp.budget;
 
 import com.dave222.budgetapp.budget.enums.State;
+import com.dave222.budgetapp.transaction.Transaction;
+import com.dave222.budgetapp.transaction.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -19,14 +21,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/budget")
-class BudgetController {
+public class BudgetController {
 
     private final BudgetRepository budgetRepository;
     private final BudgetModelAssembler budgetModelAssembler;
+    private final TransactionService transactionService;
 
-    BudgetController(BudgetRepository budgetRepository, BudgetModelAssembler budgetModelAssembler) {
+    BudgetController(BudgetRepository budgetRepository, BudgetModelAssembler budgetModelAssembler, TransactionService transactionService) {
         this.budgetRepository = budgetRepository;
         this.budgetModelAssembler = budgetModelAssembler;
+        this.transactionService = transactionService;
     }
 
     // Create
@@ -59,6 +63,15 @@ class BudgetController {
                 .orElseThrow(() -> new BudgetNotFoundException(id));
 
         return budgetModelAssembler.toModel(budget);
+    }
+
+    @GetMapping("/{id}/transactions")
+    CollectionModel<EntityModel<Transaction>> getTransactions(@PathVariable long id) {
+        List<EntityModel<Transaction>> transactions = transactionService.getAllByBudget(id);
+
+        // Todo: add delete and update links?
+        return CollectionModel.of(transactions,
+                linkTo(methodOn(BudgetController.class).getTransactions(id)).withSelfRel());
     }
 
     // Update
@@ -127,7 +140,7 @@ class BudgetController {
     }
 
     // Delete
-    @DeleteMapping("/{id}/delete")
+    @DeleteMapping("/{id}")
     ResponseEntity<?> delete(@PathVariable Long id) {
 
        if (!budgetRepository.existsById(id)) {

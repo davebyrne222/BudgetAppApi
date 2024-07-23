@@ -1,6 +1,5 @@
 package com.dave222.budgetapp.transaction;
 
-import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
@@ -26,42 +25,44 @@ public class TransactionService {
     }
 
     // Create
-    public ResponseEntity<EntityModel<Transaction>> create(Long budgetId, @Valid Transaction transaction) {
-
-        if (!budgetId.equals(transaction.getBudgetId())){
-            return ResponseEntity
-                    .badRequest()
-                    .build();
-        }
-
+    public ResponseEntity<EntityModel<Transaction>> create(Transaction transaction) {
         Transaction newTransaction = transactionRepository.save(transaction);
 
         return ResponseEntity
-                .created(linkTo(methodOn(TransactionController.class).getOne(budgetId, newTransaction.getId())).toUri())
+                .created(linkTo(methodOn(TransactionController.class).getOne(newTransaction.getId())).toUri())
                 .body(transactionModelAssembler.toModel(newTransaction));
     }
 
     // Read
-    public EntityModel<Transaction> getOne(Long budgetId, Long transactionId) {
+    public EntityModel<Transaction> getOne(Long transactionId) {
 
         Transaction transaction = transactionRepository.findById(transactionId)
-                .orElseThrow(() -> new TransactionNotFoundException(transactionId));
+            .orElseThrow(() -> new TransactionNotFoundException(transactionId));
 
         return transactionModelAssembler.toModel(transaction);
     }
 
-    public CollectionModel<EntityModel<Transaction>> getAll(Long budgetId) {
+    public CollectionModel<EntityModel<Transaction>> getAll() {
 
-        List<EntityModel<Transaction>> transactions = transactionRepository.findAll().stream()
+        List<EntityModel<Transaction>> transactions = transactionRepository.findAll()
+                .stream()
                 .map(transactionModelAssembler::toModel)
                 .collect(Collectors.toList());
 
         return CollectionModel.of(transactions,
-                linkTo(methodOn(TransactionController.class).getAll(budgetId)).withSelfRel());
+                linkTo(methodOn(TransactionController.class).getAll()).withSelfRel());
+    }
+
+    public List<EntityModel<Transaction>> getAllByBudget(Long budgetId) {
+
+        return transactionRepository.findByBudgetId(budgetId)
+                .stream()
+                .map(transactionModelAssembler::toModel)
+                .collect(Collectors.toList());
     }
 
     // Update
-    public ResponseEntity<?> update(Long budgetId, Long transactionId, @Valid Transaction newTransaction) {
+    public ResponseEntity<?> update(Long transactionId, Transaction newTransaction) {
 
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new TransactionNotFoundException(transactionId));
@@ -79,7 +80,7 @@ public class TransactionService {
     }
 
     // Delete
-    public ResponseEntity<?> delete(Long budgetId, Long transactionId) {
+    public ResponseEntity<?> delete(Long transactionId) {
 
         if (!transactionRepository.existsById(transactionId)) {
             throw new TransactionNotFoundException(transactionId);
