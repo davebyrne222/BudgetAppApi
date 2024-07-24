@@ -26,22 +26,24 @@ public class BudgetController {
     private final BudgetRepository budgetRepository;
     private final BudgetModelAssembler budgetModelAssembler;
     private final TransactionService transactionService;
+    private final BudgetService budgetService;
 
-    BudgetController(BudgetRepository budgetRepository, BudgetModelAssembler budgetModelAssembler, TransactionService transactionService) {
+    BudgetController(BudgetRepository budgetRepository, BudgetModelAssembler budgetModelAssembler, TransactionService transactionService, BudgetService budgetService) {
         this.budgetRepository = budgetRepository;
         this.budgetModelAssembler = budgetModelAssembler;
         this.transactionService = transactionService;
+        this.budgetService = budgetService;
     }
 
     // Create
     @PostMapping("/")
-    ResponseEntity<EntityModel<Budget>> newBudget(@Valid @RequestBody Budget budget) {
+    ResponseEntity<EntityModel<Budget>> create(@Valid @RequestBody Budget budget) {
 
-        Budget newBudget = budgetRepository.save(budget);
+        EntityModel<Budget> newBudget = budgetService.create(budget);
 
         return ResponseEntity
-                .created(linkTo(methodOn(BudgetController.class).one(newBudget.getId())).toUri())
-                .body(budgetModelAssembler.toModel(newBudget));
+                .created(linkTo(methodOn(BudgetController.class).one(newBudget.getContent().getId())).toUri())
+                .body(newBudget);
     }
 
     // Read
