@@ -41,7 +41,7 @@ public class BudgetController {
         EntityModel<Budget> newBudget = budgetService.create(budget);
 
         return ResponseEntity
-                .created(linkTo(methodOn(BudgetController.class).one(newBudget.getContent().getId())).toUri())
+                .created(linkTo(methodOn(BudgetController.class).getOne(newBudget.getContent().getId())).toUri())
                 .body(newBudget);
     }
 
@@ -65,12 +65,8 @@ public class BudgetController {
     }
 
     @GetMapping("/{id}")
-    EntityModel<Budget> one(@PathVariable Long id) {
-
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new BudgetNotFoundException(id));
-
-        return budgetModelAssembler.toModel(budget);
+    EntityModel<Budget> getOne(@PathVariable Long id) {
+        return budgetService.getById(id);
     }
 
     @GetMapping("/{id}/transactions")

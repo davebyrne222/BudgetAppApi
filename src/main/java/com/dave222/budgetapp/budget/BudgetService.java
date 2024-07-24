@@ -33,4 +33,11 @@ public class BudgetService {
                 .map(budgetModelAssembler::toModel)
                 .collect(Collectors.toList());
     }
+
+    public EntityModel<Budget> getById(long id) {
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new BudgetNotFoundException(id));
+
+        return budgetModelAssembler.toModel(budget);
+    }
 }
