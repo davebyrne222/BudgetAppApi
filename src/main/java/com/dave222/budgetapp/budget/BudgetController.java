@@ -65,8 +65,8 @@ public class BudgetController {
     }
 
     @GetMapping("/{id}")
-    EntityModel<Budget> getOne(@PathVariable Long id) {
-        return budgetService.getById(id);
+    ResponseEntity<EntityModel<Budget>> getOne(@PathVariable Long id) {
+        return ResponseEntity.ok(budgetService.getById(id));
     }
 
     @GetMapping("/{id}/transactions")
