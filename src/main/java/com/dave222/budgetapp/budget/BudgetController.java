@@ -50,9 +50,7 @@ public class BudgetController {
     @GetMapping("/")
     CollectionModel<EntityModel<Budget>> all() {
 
-        List<EntityModel<Budget>> budgets = budgetRepository.findAll().stream()
-                .map(budgetModelAssembler::toModel)
-                .collect(Collectors.toList());
+        List<EntityModel<Budget>> budgets = budgetService.getAll();
 
         return CollectionModel.of(budgets,
                 linkTo(methodOn(BudgetController.class).all()).withSelfRel());

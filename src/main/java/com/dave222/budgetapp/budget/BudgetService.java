@@ -20,4 +20,10 @@ public class BudgetService {
     public EntityModel<Budget> create(Budget budget) {
         return budgetModelAssembler.toModel(budgetRepository.save(budget));
     }
+
+    public List<EntityModel<Budget>> getAll() {
+        return budgetRepository.findAll().stream()
+                .map(budgetModelAssembler::toModel)
+                .collect(Collectors.toList());
+    }
 }
