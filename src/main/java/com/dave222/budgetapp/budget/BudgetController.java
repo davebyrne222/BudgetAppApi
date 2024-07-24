@@ -73,34 +73,14 @@ public class BudgetController {
     CollectionModel<EntityModel<Transaction>> getTransactions(@PathVariable long id) {
         List<EntityModel<Transaction>> transactions = transactionService.getAllByBudget(id);
 
-        // Todo: add delete and update links?
         return CollectionModel.of(transactions,
                 linkTo(methodOn(BudgetController.class).getTransactions(id)).withSelfRel());
     }
 
     // Update
     @PutMapping("/{id}")
-    ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody Budget newBudget) {
-
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new BudgetNotFoundException(id));
-
-        if (budget.getState() != State.ACTIVE){
-            return ResponseEntity
-                    .status(HttpStatus.FORBIDDEN)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
-                    .body(Problem.create()
-                            .withTitle("Method Forbidden")
-                            .withDetail("Budget of state " + budget.getState() + " can not be updated"));
-        }
-
-        // No difference between stored and new budgets
-        if (budget.equals(newBudget)) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.ok(budgetModelAssembler.toModel(budgetRepository.save(newBudget)));
-
+    ResponseEntity<EntityModel<Budget>> update(@PathVariable Long id, @Valid @RequestBody Budget newBudget) {
+        return ResponseEntity.ok(budgetService.update(id, newBudget));
     }
 
     @PutMapping("/{id}/archive")

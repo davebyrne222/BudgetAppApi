@@ -1,5 +1,6 @@
 package com.dave222.budgetapp.budget;
 
+import com.dave222.budgetapp.budget.enums.State;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
@@ -39,5 +40,17 @@ public class BudgetService {
                 .orElseThrow(() -> new BudgetNotFoundException(id));
 
         return budgetModelAssembler.toModel(budget);
+    }
+
+    public EntityModel<Budget> update(long id, Budget newBudget) {
+
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new BudgetNotFoundException(id));
+
+        if (budget.getState() != State.ACTIVE) throw new BudgetNotActiveException(id);
+
+        if (budget.equals(newBudget)) throw new BudgetIdenticalException();
+
+        return budgetModelAssembler.toModel(budgetRepository.save(newBudget));
     }
 }
