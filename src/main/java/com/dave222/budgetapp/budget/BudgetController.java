@@ -1,6 +1,8 @@
 package com.dave222.budgetapp.budget;
 
 import com.dave222.budgetapp.budget.enums.State;
+import com.dave222.budgetapp.transaction.Transaction;
+import com.dave222.budgetapp.transaction.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -18,22 +20,22 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-class BudgetController {
+@RequestMapping("/budget")
+public class BudgetController {
 
     private final BudgetRepository budgetRepository;
     private final BudgetModelAssembler budgetModelAssembler;
+    private final TransactionService transactionService;
 
-    BudgetController(BudgetRepository budgetRepository, BudgetModelAssembler budgetModelAssembler) {
-
+    BudgetController(BudgetRepository budgetRepository, BudgetModelAssembler budgetModelAssembler, TransactionService transactionService) {
         this.budgetRepository = budgetRepository;
         this.budgetModelAssembler = budgetModelAssembler;
+        this.transactionService = transactionService;
     }
 
     // Create
-    @PostMapping("/budgets")
+    @PostMapping("/")
     ResponseEntity<EntityModel<Budget>> newBudget(@Valid @RequestBody Budget budget) {
-
-        System.out.println("Request body: " + budget.toString());
 
         Budget newBudget = budgetRepository.save(budget);
 
@@ -43,7 +45,7 @@ class BudgetController {
     }
 
     // Read
-    @GetMapping("/budgets")
+    @GetMapping("/")
     CollectionModel<EntityModel<Budget>> all() {
 
         List<EntityModel<Budget>> budgets = budgetRepository.findAll().stream()
@@ -54,7 +56,19 @@ class BudgetController {
                 linkTo(methodOn(BudgetController.class).all()).withSelfRel());
     }
 
-    @GetMapping("/budgets/{id}")
+    @GetMapping("/latest")
+    CollectionModel<EntityModel<Budget>> latest() {
+
+        List<EntityModel<Budget>> budgets = budgetRepository.findFirst5ByOrderByUpdatedDesc()
+                .stream()
+                .map(budgetModelAssembler::toModel)
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(budgets,
+                linkTo(methodOn(BudgetController.class).latest()).withSelfRel());
+    }
+
+    @GetMapping("/{id}")
     EntityModel<Budget> one(@PathVariable Long id) {
 
         Budget budget = budgetRepository.findById(id)
@@ -63,14 +77,22 @@ class BudgetController {
         return budgetModelAssembler.toModel(budget);
     }
 
+    @GetMapping("/{id}/transactions")
+    CollectionModel<EntityModel<Transaction>> getTransactions(@PathVariable long id) {
+        List<EntityModel<Transaction>> transactions = transactionService.getAllByBudget(id);
+
+        // Todo: add delete and update links?
+        return CollectionModel.of(transactions,
+                linkTo(methodOn(BudgetController.class).getTransactions(id)).withSelfRel());
+    }
+
     // Update
-    @PutMapping("/budgets/{id}")
-    ResponseEntity<?> update(@Valid @RequestBody Budget newBudget, @PathVariable Long id) {
+    @PutMapping("/{id}")
+    ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody Budget newBudget) {
 
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new BudgetNotFoundException(id));
 
-        // Cannot update archived budget
         if (budget.getState() != State.ACTIVE){
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)
@@ -85,14 +107,11 @@ class BudgetController {
             return ResponseEntity.noContent().build();
         }
 
-        // Replace old budget with new:
-        newBudget.setId(budget.getId());
-
         return ResponseEntity.ok(budgetModelAssembler.toModel(budgetRepository.save(newBudget)));
 
     }
 
-    @PutMapping("/budgets/{id}/archive")
+    @PutMapping("/{id}/archive")
     ResponseEntity<?> archive(@PathVariable Long id) {
 
         Budget budget = budgetRepository.findById(id)
@@ -112,7 +131,7 @@ class BudgetController {
                         .withDetail("You can't archive a budget that is in the " + budget.getState() + " state"));
     }
 
-    @PutMapping("/budgets/{id}/dearchive")
+    @PutMapping("/{id}/dearchive")
     ResponseEntity<?> dearchive(@PathVariable Long id) {
 
         Budget budget = budgetRepository.findById(id)
@@ -133,7 +152,7 @@ class BudgetController {
     }
 
     // Delete
-    @DeleteMapping("/budgets/{id}/delete")
+    @DeleteMapping("/{id}")
     ResponseEntity<?> delete(@PathVariable Long id) {
 
        if (!budgetRepository.existsById(id)) {

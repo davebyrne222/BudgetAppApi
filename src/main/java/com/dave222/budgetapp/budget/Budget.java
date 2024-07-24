@@ -9,8 +9,10 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -23,12 +25,12 @@ public class Budget {
     private String name;
 
     @NotNull(message = "startDate is mandatory")
-    private LocalDateTime startDate;
+    private Date startDate;
 
     @NotNull(message = "startBalance is mandatory")
     private BigDecimal startBalance;
 
-    private LocalDateTime endDate;
+    private Date endDate;
     private BigDecimal targetBalance;
     private String description;
 
@@ -59,7 +61,7 @@ public class Budget {
 
     protected Budget() {}
 
-    public Budget(String name, String description, LocalDateTime startDate, BigDecimal startBalance, LocalDateTime endDate, BigDecimal targetBalance) {
+    public Budget(String name, String description, Date startDate, BigDecimal startBalance, Date endDate, BigDecimal targetBalance) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
@@ -135,11 +137,11 @@ public class Budget {
     public void setTotalOutgoing(BigDecimal totalOutgoing) { this.totalOutgoing = totalOutgoing; }
 
     // Start date
-    public LocalDateTime getStartDate(){
+    public Date getStartDate(){
         return this.startDate;
     };
 
-    public void setStartDate(LocalDateTime startDate){
+    public void setStartDate(Date startDate){
         this.startDate = startDate;
     };
 
@@ -153,11 +155,11 @@ public class Budget {
     };
 
     // End date
-    public LocalDateTime getEndDate(){
+    public Date getEndDate(){
         return this.endDate;
     };
 
-    public void setEndDate(LocalDateTime endDate){
+    public void setEndDate(Date endDate){
         this.endDate = endDate;
     };
 
@@ -171,23 +173,32 @@ public class Budget {
     };
 
 
-
     // Utils
     @Override
     public boolean equals(Object o) {
-
-        if (this == o)
-            return true;
-
-        if (!(o instanceof Budget))
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         Budget budget = (Budget) o;
 
-        return Objects.equals(this.id, budget.id)
-                && Objects.equals(this.description, budget.description)
-                && this.status == budget.status;
+        // Use reflection to compare all fields
+        Field[] fields = this.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            try {
+                Object thisValue = field.get(this);
+                Object otherValue = field.get(budget);
+
+                if (!Objects.equals(thisValue, otherValue)) {
+                    return false;
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Failed to access field values", e);
+            }
+        }
+        return true;
     }
+
 
     @Override
     public String toString(){

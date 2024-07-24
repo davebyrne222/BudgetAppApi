@@ -14,7 +14,7 @@ class TransactionModelAssembler implements RepresentationModelAssembler<Transact
     public EntityModel<Transaction> toModel(Transaction transaction) {
 
         return EntityModel.of(transaction,
-                linkTo(methodOn(TransactionController.class).one(transaction.getId())).withSelfRel(),
+                linkTo(methodOn(TransactionController.class).getOne(transaction.getId())).withSelfRel(),
                 linkTo(methodOn(TransactionController.class).delete(transaction.getId())).withRel("delete"));
 
     }
