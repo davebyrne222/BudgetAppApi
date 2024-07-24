@@ -15,7 +15,7 @@ class BudgetModelAssembler implements RepresentationModelAssembler<Budget, Entit
     public EntityModel<Budget> toModel(Budget budget) {
 
         EntityModel<Budget> budgetModel = EntityModel.of(budget,
-                linkTo(methodOn(BudgetController.class).one(budget.getId())).withSelfRel(),
+                linkTo(methodOn(BudgetController.class).getOne(budget.getId())).withSelfRel(),
                 linkTo(methodOn(BudgetController.class).all()).withRel("all"),
                 linkTo(methodOn(BudgetController.class).delete(budget.getId())).withRel("delete"));
 
