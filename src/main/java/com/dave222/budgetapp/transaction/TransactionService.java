@@ -25,12 +25,8 @@ public class TransactionService {
     }
 
     // Create
-    public ResponseEntity<EntityModel<Transaction>> create(Transaction transaction) {
-        Transaction newTransaction = transactionRepository.save(transaction);
-
-        return ResponseEntity
-                .created(linkTo(methodOn(TransactionController.class).getOne(newTransaction.getId())).toUri())
-                .body(transactionModelAssembler.toModel(newTransaction));
+    public Transaction create(Transaction transaction) {
+        return transactionRepository.save(transaction);
     }
 
     // Read
