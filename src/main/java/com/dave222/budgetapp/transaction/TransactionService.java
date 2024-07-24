@@ -1,15 +1,10 @@
 package com.dave222.budgetapp.transaction;
 
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 
 @Service
@@ -25,8 +20,8 @@ public class TransactionService {
     }
 
     // Create
-    public Transaction create(Transaction transaction) {
-        return transactionRepository.save(transaction);
+    public EntityModel<Transaction> create(Transaction transaction) {
+        return transactionModelAssembler.toModel(transactionRepository.save(transaction));
     }
 
     // Read

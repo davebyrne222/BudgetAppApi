@@ -16,22 +16,19 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 class TransactionController {
 
     private final TransactionService transactionService;
-    private final TransactionModelAssembler transactionModelAssembler;
 
-
-    TransactionController(TransactionService transactionService, TransactionModelAssembler transactionModelAssembler) {
+    TransactionController(TransactionService transactionService) {
         this.transactionService = transactionService;
-        this.transactionModelAssembler = transactionModelAssembler;
     }
 
     // Create
     @PostMapping("/")
     ResponseEntity<EntityModel<Transaction>> create(@RequestBody @Valid Transaction transaction) {
-         Transaction newTransaction = transactionService.create(transaction);
+         EntityModel<Transaction> newTransaction = transactionService.create(transaction);
 
         return ResponseEntity
-                .created(linkTo(methodOn(TransactionController.class).getOne(newTransaction.getId())).toUri())
-                .body(transactionModelAssembler.toModel(newTransaction));
+                .created(linkTo(methodOn(TransactionController.class).getOne(newTransaction.getContent().getId())).toUri())
+                .body(newTransaction);
     }
 
     // Read
