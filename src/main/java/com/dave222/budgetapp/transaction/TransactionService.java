@@ -54,20 +54,20 @@ public class TransactionService {
     }
 
     // Update
-    public ResponseEntity<?> update(Long transactionId, Transaction newTransaction) {
+    public EntityModel<Transaction> update(Long transactionId, Transaction newTransaction) {
 
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new TransactionNotFoundException(transactionId));
 
         // No difference between stored and new transaction
         if (transaction.equals(newTransaction)) {
-            return ResponseEntity.noContent().build();
+            return null;
         }
 
         // Replace old transaction with new:
         newTransaction.setId(transaction.getId());
 
-        return ResponseEntity.ok(transactionModelAssembler.toModel(transactionRepository.save(newTransaction)));
+        return transactionModelAssembler.toModel(transactionRepository.save(newTransaction));
 
     }
 

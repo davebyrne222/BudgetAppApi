@@ -51,8 +51,12 @@ class TransactionController {
 
     // Update
     @PutMapping("/{transactionId}")
-    ResponseEntity<?> update(@PathVariable Long transactionId, @RequestBody @Valid Transaction newTransaction) {
-        return transactionService.update(transactionId, newTransaction);
+    ResponseEntity<EntityModel<Transaction>> update(@PathVariable Long transactionId, @RequestBody @Valid Transaction newTransaction) {
+        EntityModel<Transaction> transaction = transactionService.update(transactionId, newTransaction);
+
+        if (transaction == null) return ResponseEntity.noContent().build();
+
+        return ResponseEntity.ok(transaction);
     }
 
     // Delete
