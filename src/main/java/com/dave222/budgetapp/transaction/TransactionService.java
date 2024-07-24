@@ -60,9 +60,8 @@ public class TransactionService {
                 .orElseThrow(() -> new TransactionNotFoundException(transactionId));
 
         // No difference between stored and new transaction
-        if (transaction.equals(newTransaction)) {
-            return null;
-        }
+        if (transaction.equals(newTransaction)) return null;
+
 
         // Replace old transaction with new:
         newTransaction.setId(transaction.getId());
@@ -72,7 +71,7 @@ public class TransactionService {
     }
 
     // Delete
-    public ResponseEntity<?> delete(Long transactionId) {
+    public String delete(Long transactionId) {
 
         if (!transactionRepository.existsById(transactionId)) {
             throw new TransactionNotFoundException(transactionId);
@@ -80,6 +79,6 @@ public class TransactionService {
 
         transactionRepository.deleteById(transactionId);
 
-        return ResponseEntity.ok("Transaction deleted");
+        return "Transaction deleted";
     }
 }
