@@ -44,8 +44,9 @@ class TransactionController {
     }
 
     @GetMapping("/{transactionId}")
-    EntityModel<Transaction> getOne(@PathVariable Long transactionId) {
-        return transactionService.getOne(transactionId);
+    ResponseEntity<EntityModel<Transaction>> getOne(@PathVariable Long transactionId) {
+        return ResponseEntity
+                .ok(transactionService.getOne(transactionId));
     }
 
     // Update
