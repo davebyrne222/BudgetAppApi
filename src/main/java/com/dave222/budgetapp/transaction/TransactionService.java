@@ -60,7 +60,7 @@ public class TransactionService {
                 .orElseThrow(() -> new TransactionNotFoundException(transactionId));
 
         // No difference between stored and new transaction
-        if (transaction.equals(newTransaction)) return null;
+        if (transaction.equals(newTransaction)) throw new TransactionIdenticalException();
 
 
         // Replace old transaction with new:
@@ -73,9 +73,7 @@ public class TransactionService {
     // Delete
     public String delete(Long transactionId) {
 
-        if (!transactionRepository.existsById(transactionId)) {
-            throw new TransactionNotFoundException(transactionId);
-        }
+        if (!transactionRepository.existsById(transactionId)) throw new TransactionNotFoundException(transactionId);
 
         transactionRepository.deleteById(transactionId);
 
