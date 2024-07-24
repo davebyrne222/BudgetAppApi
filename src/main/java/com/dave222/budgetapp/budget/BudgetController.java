@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -59,10 +58,7 @@ public class BudgetController {
     @GetMapping("/latest")
     CollectionModel<EntityModel<Budget>> latest() {
 
-        List<EntityModel<Budget>> budgets = budgetRepository.findFirst5ByOrderByUpdatedDesc()
-                .stream()
-                .map(budgetModelAssembler::toModel)
-                .collect(Collectors.toList());
+        List<EntityModel<Budget>> budgets = budgetService.getLatest();
 
         return CollectionModel.of(budgets,
                 linkTo(methodOn(BudgetController.class).latest()).withSelfRel());

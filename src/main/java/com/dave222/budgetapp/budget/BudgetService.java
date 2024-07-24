@@ -26,4 +26,11 @@ public class BudgetService {
                 .map(budgetModelAssembler::toModel)
                 .collect(Collectors.toList());
     }
+
+    public List<EntityModel<Budget>> getLatest() {
+        return budgetRepository.findFirst5ByOrderByUpdatedDesc()
+                .stream()
+                .map(budgetModelAssembler::toModel)
+                .collect(Collectors.toList());
+    }
 }
