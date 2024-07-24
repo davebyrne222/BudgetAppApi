@@ -30,23 +30,19 @@ public class TransactionService {
     }
 
     // Read
-    public EntityModel<Transaction> getOne(Long transactionId) {
-
-        Transaction transaction = transactionRepository.findById(transactionId)
-            .orElseThrow(() -> new TransactionNotFoundException(transactionId));
-
-        return transactionModelAssembler.toModel(transaction);
-    }
-
-    public CollectionModel<EntityModel<Transaction>> getAll() {
-
-        List<EntityModel<Transaction>> transactions = transactionRepository.findAll()
+    public List<EntityModel<Transaction>> getAll() {
+        return transactionRepository.findAll()
                 .stream()
                 .map(transactionModelAssembler::toModel)
                 .collect(Collectors.toList());
+    }
 
-        return CollectionModel.of(transactions,
-                linkTo(methodOn(TransactionController.class).getAll()).withSelfRel());
+    public EntityModel<Transaction> getOne(Long transactionId) {
+
+        Transaction transaction = transactionRepository.findById(transactionId)
+                .orElseThrow(() -> new TransactionNotFoundException(transactionId));
+
+        return transactionModelAssembler.toModel(transaction);
     }
 
     public List<EntityModel<Transaction>> getAllByBudget(Long budgetId) {

@@ -6,6 +6,8 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
@@ -35,7 +37,10 @@ class TransactionController {
     // Read
     @GetMapping("/")
     CollectionModel<EntityModel<Transaction>> getAll() {
-        return transactionService.getAll();
+        List<EntityModel<Transaction>> transactions = transactionService.getAll();
+
+        return CollectionModel.of(transactions,
+                linkTo(methodOn(TransactionController.class).getAll()).withSelfRel());
     }
 
     @GetMapping("/{transactionId}")
