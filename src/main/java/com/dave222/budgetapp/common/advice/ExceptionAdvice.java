@@ -1,8 +1,8 @@
-package com.dave222.budgetapp.advice;
+package com.dave222.budgetapp.common.advice;
 
 import com.dave222.budgetapp.budget.BudgetNotActiveException;
 import com.dave222.budgetapp.budget.BudgetNotFoundException;
-import com.dave222.budgetapp.exceptions.RedundantRequestException;
+import com.dave222.budgetapp.common.exceptions.RedundantRequestException;
 import com.dave222.budgetapp.transaction.TransactionNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
 package com.dave222.budgetapp.budget;
 
 import com.dave222.budgetapp.budget.enums.State;
-import com.dave222.budgetapp.exceptions.RedundantRequestException;
+import com.dave222.budgetapp.common.exceptions.RedundantRequestException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 

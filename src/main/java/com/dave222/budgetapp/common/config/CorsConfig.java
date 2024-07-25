@@ -1,4 +1,4 @@
-package com.dave222.budgetapp.config;
+package com.dave222.budgetapp.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

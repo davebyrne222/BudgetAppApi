@@ -1,4 +1,4 @@
-package com.dave222.budgetapp.config;
+package com.dave222.budgetapp.common.config;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.context.ApplicationContextInitializer;

@@ -1,6 +1,6 @@
 package com.dave222.budgetapp.transaction;
 
-import com.dave222.budgetapp.exceptions.RedundantRequestException;
+import com.dave222.budgetapp.common.exceptions.RedundantRequestException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
