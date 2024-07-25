@@ -1,4 +1,4 @@
-package com.dave222.budgetapp.budget;
+package com.dave222.budgetapp.exceptions;
 
 public class RedundantRequestException extends RuntimeException {
     public RedundantRequestException(String message) {

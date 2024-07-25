@@ -1,5 +1,6 @@
 package com.dave222.budgetapp.transaction;
 
+import com.dave222.budgetapp.exceptions.RedundantRequestException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +56,7 @@ public class TransactionService {
                 .orElseThrow(() -> new TransactionNotFoundException(transactionId));
 
         // No difference between stored and new transaction
-        if (transaction.equals(newTransaction)) throw new TransactionIdenticalException();
+        if (transaction.equals(newTransaction)) throw new RedundantRequestException("Update contains no changes");
 
 
         // Replace old transaction with new:
