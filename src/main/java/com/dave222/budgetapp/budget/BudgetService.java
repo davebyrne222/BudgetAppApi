@@ -79,4 +79,26 @@ public class BudgetService {
 
         budgetRepository.save(budget);
     }
+
+    /**
+     * Deletes the budget with the given id.
+     * <p>
+     * This method checks if the budget with the specified id exists in the repository.
+     * If the budget does not exist, a {@link BudgetNotFoundException} is thrown.
+     * If the budget exists, it is deleted from the repository.
+     * </p>
+     * <p>
+     * TODO: Delete transactions associated with the budget.
+     * For more information on Hibernate JPA cascade types, refer to:
+     * <a href="https://howtodoinjava.com/hibernate/hibernate-jpa-cascade-types/">Hibernate JPA Cascade Types</a>
+     * </p>
+     *
+     * @param id the id of the budget to be deleted
+     * @throws BudgetNotFoundException if no budget with the given id is found
+     */
+    public void deleteById(long id) {
+        if (!budgetRepository.existsById(id)) throw new BudgetNotFoundException(id);
+
+        budgetRepository.deleteById(id);
+    }
 }

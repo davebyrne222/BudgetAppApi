@@ -86,7 +86,7 @@ public class BudgetController {
     }
 
     @PutMapping("/{id}/dearchive")
-    ResponseEntity<?> dearchive(@PathVariable Long id) {
+    ResponseEntity<String> dearchive(@PathVariable Long id) {
         budgetService.setState(id, State.ACTIVE);
         return ResponseEntity.ok("Budget de-archived");
     }
@@ -94,17 +94,6 @@ public class BudgetController {
     // Delete
     @DeleteMapping("/{id}")
     ResponseEntity<?> delete(@PathVariable Long id) {
-
-       if (!budgetRepository.existsById(id)) {
-           throw new BudgetNotFoundException(id);
-       }
-
-       budgetRepository.deleteById(id);
-        /*
-        TODO: Delete transactions
-        https://howtodoinjava.com/hibernate/hibernate-jpa-cascade-types/
-        transactionRepository.deleteById(id);
-        */
-
+        budgetService.deleteById(id);
         return ResponseEntity.ok("Budget deleted");
     }}
