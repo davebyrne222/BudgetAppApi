@@ -55,26 +55,27 @@ public class BudgetService {
     }
 
     /**
-     * Archives the budget with the given id.
+     * Sets the state of the budget with the given id.
      * <p>
      * This method retrieves the budget with the specified id from the repository.
      * If the budget does not exist, a {@link BudgetNotFoundException} is thrown.
-     * If the budget is already archived, a {@link RedundantRequestException} is thrown.
-     * Otherwise, the budget's state is set to {@code State.ARCHIVED} and the updated budget
+     * If the budget is already in the specified state, a {@link RedundantRequestException} is thrown.
+     * Otherwise, the budget's state is updated to the provided state and the updated budget
      * is saved back to the repository.
      * </p>
      *
-     * @param id the id of the budget to be archived
+     * @param id the id of the budget to update
+     * @param state the new state to set for the budget
      * @throws BudgetNotFoundException if no budget with the given id is found
-     * @throws RedundantRequestException if the budget is already archived
+     * @throws RedundantRequestException if the budget is already in the specified state
      */
-    public void archive(long id) {
+    public void setState(long id, State state) {
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new BudgetNotFoundException(id));
 
-        if (budget.getState() == State.ARCHIVED) throw new RedundantRequestException("Budget is already archived");
+        if (budget.getState() == state) throw new RedundantRequestException("Budget is already in state: " + state.name());
 
-        budget.setState(State.ARCHIVED);
+        budget.setState(state);
 
         budgetRepository.save(budget);
     }

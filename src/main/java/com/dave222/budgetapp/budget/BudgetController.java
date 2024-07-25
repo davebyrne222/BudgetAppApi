@@ -6,10 +6,6 @@ import com.dave222.budgetapp.transaction.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.MediaTypes;
-import org.springframework.hateoas.mediatype.problem.Problem;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,28 +81,14 @@ public class BudgetController {
 
     @PutMapping("/{id}/archive")
     ResponseEntity<String> archive(@PathVariable Long id) {
-        budgetService.archive(id);
+        budgetService.setState(id, State.ARCHIVED);
         return ResponseEntity.ok("Budget archived");
     }
 
     @PutMapping("/{id}/dearchive")
     ResponseEntity<?> dearchive(@PathVariable Long id) {
-
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new BudgetNotFoundException(id));
-
-        if (budget.getState() == State.ARCHIVED) {
-            budget.setState(State.ACTIVE);
-            budgetRepository.save(budget);
-            return ResponseEntity.ok(budgetModelAssembler.toModel(budget));
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.METHOD_NOT_ALLOWED)
-                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
-                .body(Problem.create()
-                        .withTitle("Method Not Allowed")
-                        .withDetail("You can't de-archive a budget that is in the " + budget.getState() + " state"));
+        budgetService.setState(id, State.ACTIVE);
+        return ResponseEntity.ok("Budget de-archived");
     }
 
     // Delete
