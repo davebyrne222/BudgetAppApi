@@ -53,4 +53,29 @@ public class BudgetService {
 
         return budgetModelAssembler.toModel(budgetRepository.save(newBudget));
     }
+
+    /**
+     * Archives the budget with the given id.
+     * <p>
+     * This method retrieves the budget with the specified id from the repository.
+     * If the budget does not exist, a {@link BudgetNotFoundException} is thrown.
+     * If the budget is already archived, a {@link RedundantRequestException} is thrown.
+     * Otherwise, the budget's state is set to {@code State.ARCHIVED} and the updated budget
+     * is saved back to the repository.
+     * </p>
+     *
+     * @param id the id of the budget to be archived
+     * @throws BudgetNotFoundException if no budget with the given id is found
+     * @throws RedundantRequestException if the budget is already archived
+     */
+    public void archive(long id) {
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new BudgetNotFoundException(id));
+
+        if (budget.getState() == State.ARCHIVED) throw new RedundantRequestException("Budget is already archived");
+
+        budget.setState(State.ARCHIVED);
+
+        budgetRepository.save(budget);
+    }
 }

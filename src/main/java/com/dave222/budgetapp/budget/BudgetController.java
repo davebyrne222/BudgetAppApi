@@ -84,23 +84,9 @@ public class BudgetController {
     }
 
     @PutMapping("/{id}/archive")
-    ResponseEntity<?> archive(@PathVariable Long id) {
-
-        Budget budget = budgetRepository.findById(id)
-                .orElseThrow(() -> new BudgetNotFoundException(id));
-
-        if (budget.getState() == State.ACTIVE) {
-            budget.setState(State.ARCHIVED);
-            budgetRepository.save(budget);
-            return ResponseEntity.ok(budgetModelAssembler.toModel(budget));
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.METHOD_NOT_ALLOWED)
-                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
-                .body(Problem.create()
-                        .withTitle("Method Not Allowed")
-                        .withDetail("You can't archive a budget that is in the " + budget.getState() + " state"));
+    ResponseEntity<String> archive(@PathVariable Long id) {
+        budgetService.archive(id);
+        return ResponseEntity.ok("Budget archived");
     }
 
     @PutMapping("/{id}/dearchive")

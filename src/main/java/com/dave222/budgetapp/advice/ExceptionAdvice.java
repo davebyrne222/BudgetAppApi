@@ -3,6 +3,7 @@ package com.dave222.budgetapp.advice;
 import com.dave222.budgetapp.budget.BudgetIdenticalException;
 import com.dave222.budgetapp.budget.BudgetNotActiveException;
 import com.dave222.budgetapp.budget.BudgetNotFoundException;
+import com.dave222.budgetapp.budget.RedundantRequestException;
 import com.dave222.budgetapp.transaction.TransactionIdenticalException;
 import com.dave222.budgetapp.transaction.TransactionNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -17,22 +18,23 @@ public class ExceptionAdvice {
             BudgetNotFoundException.class,
             TransactionNotFoundException.class
     })
-    public ResponseEntity<String> handleNotFoundException(BudgetNotFoundException ex) {
+    public ResponseEntity<String> handleNotFoundException(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler({
             BudgetNotActiveException.class
     })
-    public ResponseEntity<String> handleNotActiveException(BudgetNotActiveException ex) {
+    public ResponseEntity<String> handleNotActiveException(RuntimeException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
 
     @ExceptionHandler({
             BudgetIdenticalException.class,
-            TransactionIdenticalException.class
+            TransactionIdenticalException.class,
+            RedundantRequestException.class
     })
-    public ResponseEntity<String> handleNoUpdateException(TransactionIdenticalException ex) {
+    public ResponseEntity<String> handleNoUpdateException(RuntimeException ex) {
         return ResponseEntity.noContent().build();
     }
 }
