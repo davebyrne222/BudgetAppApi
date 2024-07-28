@@ -3,8 +3,6 @@ package com.dave222.budgetapp.budget;
 import com.dave222.budgetapp.budget.enums.State;
 import com.dave222.budgetapp.budget.enums.Status;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -17,25 +15,7 @@ import java.util.Objects;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Budget {
-
-    // User defined
-    @NotNull(message = "name is mandatory")
-    @Size(max = 255, message = "name max-length is 255 characters")
-    private String name;
-
-    @NotNull(message = "startDate is mandatory")
-    private Date startDate;
-
-    @NotNull(message = "startBalance is mandatory")
-    private BigDecimal startBalance;
-
-    private Date endDate;
-    private BigDecimal targetBalance;
-    private String description;
-
-    // Todo: categories; create separate entity for categories and define categories as HashMap<String, category> (?)
-    // Todo: accounts
+public class Budget extends BudgetRequest {
 
     // system managed
     private @Id @GeneratedValue Long id;
@@ -62,12 +42,45 @@ public class Budget {
     protected Budget() {}
 
     public Budget(String name, String description, Date startDate, BigDecimal startBalance, Date endDate, BigDecimal targetBalance) {
-        this.name = name;
-        this.description = description;
-        this.startDate = startDate;
-        this.startBalance = startBalance;
-        this.endDate = endDate;
-        this.targetBalance = targetBalance;
+        super(
+                name,
+                description,
+                startDate,
+                startBalance,
+                endDate,
+                targetBalance
+        );
+    }
+
+    public Budget(BudgetRequest request) {
+         this(
+                request.getName(),
+                request.getDescription(),
+                request.getStartDate(),
+                request.getStartBalance(),
+                request.getEndDate(),
+                request.getTargetBalance()
+        );
+    }
+
+    public BudgetRequest toRequest() {
+        return new BudgetRequest(
+                getName(),
+                getDescription(),
+                getStartDate(),
+                getStartBalance(),
+                getEndDate(),
+                getTargetBalance()
+        );
+    }
+
+    public void updateFromRequest(BudgetRequest request) {
+        setName(request.getName());
+        setDescription(request.getDescription());
+        setStartDate(request.getStartDate());
+        setStartBalance(request.getStartBalance());
+        setEndDate(request.getEndDate());
+        setTargetBalance(request.getTargetBalance());
     }
 
     // ID
@@ -178,6 +191,7 @@ public class Budget {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
         Budget budget = (Budget) o;
 

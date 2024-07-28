@@ -32,9 +32,9 @@ public class BudgetController {
 
     // Create
     @PostMapping("/")
-    ResponseEntity<EntityModel<Budget>> create(@Valid @RequestBody Budget budget) {
+    ResponseEntity<EntityModel<Budget>> create(@Valid @RequestBody BudgetRequest budgetRequest) {
 
-        EntityModel<Budget> newBudget = budgetService.create(budget);
+        EntityModel<Budget> newBudget = budgetService.create(budgetRequest);
 
         return ResponseEntity
                 .created(linkTo(methodOn(BudgetController.class).getOne(newBudget.getContent().getId())).toUri())
@@ -75,7 +75,7 @@ public class BudgetController {
 
     // Update
     @PutMapping("/{id}")
-    ResponseEntity<EntityModel<Budget>> update(@PathVariable Long id, @Valid @RequestBody Budget newBudget) {
+    ResponseEntity<EntityModel<Budget>> update(@PathVariable Long id, @Valid @RequestBody BudgetRequest newBudget) {
         return ResponseEntity.ok(budgetService.update(id, newBudget));
     }
 

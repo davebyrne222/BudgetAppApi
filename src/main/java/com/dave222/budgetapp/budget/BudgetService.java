@@ -19,8 +19,11 @@ public class BudgetService {
         this.budgetModelAssembler = budgetModelAssembler;
     }
 
-    public EntityModel<Budget> create(Budget budget) {
-        return budgetModelAssembler.toModel(budgetRepository.save(budget));
+    public EntityModel<Budget> create(BudgetRequest budgetRequest) {
+
+        Budget newBudget = budgetRepository.save(new Budget(budgetRequest));
+
+        return budgetModelAssembler.toModel(newBudget);
     }
 
     public List<EntityModel<Budget>> getAll() {
@@ -43,16 +46,20 @@ public class BudgetService {
         return budgetModelAssembler.toModel(budget);
     }
 
-    public EntityModel<Budget> update(long id, Budget newBudget) {
+    public EntityModel<Budget> update(long id, BudgetRequest budgetRequest) {
 
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new BudgetNotFoundException(id));
 
         if (budget.getState() != State.ACTIVE) throw new BudgetNotActiveException(id);
 
-        if (budget.equals(newBudget)) throw new RedundantRequestException("Update contains no changes");
+        BudgetRequest budgetCast = budget.toRequest();
 
-        return budgetModelAssembler.toModel(budgetRepository.save(newBudget));
+        if (budgetCast.equals(budgetRequest)) throw new RedundantRequestException("Update contains no changes");
+
+        budget.updateFromRequest(budgetRequest);
+
+        return budgetModelAssembler.toModel(budgetRepository.save(budget));
     }
 
     /**
