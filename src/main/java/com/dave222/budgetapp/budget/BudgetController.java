@@ -58,7 +58,10 @@ public class BudgetController {
     @GetMapping("/latest")
     CollectionModel<EntityModel<Budget>> latest() {
 
-        List<EntityModel<Budget>> budgets = budgetService.getLatest();
+        List<EntityModel<Budget>> budgets = budgetService.getLatest()
+                .stream()
+                .map(budgetModelAssembler::toModel)
+                .collect(Collectors.toList());
 
         return CollectionModel.of(budgets,
                 linkTo(methodOn(BudgetController.class).latest()).withSelfRel());
@@ -66,7 +69,10 @@ public class BudgetController {
 
     @GetMapping("/{id}")
     ResponseEntity<EntityModel<Budget>> getOne(@PathVariable Long id) {
-        return ResponseEntity.ok(budgetService.getById(id));
+        return ResponseEntity.ok(
+                budgetModelAssembler.toModel(
+                        budgetService.getById(id)
+                ));
     }
 
     @GetMapping("/{id}/transactions")

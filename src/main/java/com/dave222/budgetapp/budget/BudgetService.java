@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -28,18 +27,13 @@ public class BudgetService {
         return new ArrayList<>(budgetRepository.findAll());
     }
 
-    public List<EntityModel<Budget>> getLatest() {
-        return budgetRepository.findFirst5ByOrderByUpdatedDesc()
-                .stream()
-                .map(budgetModelAssembler::toModel)
-                .collect(Collectors.toList());
+    public List<Budget> getLatest() {
+        return new ArrayList<>(budgetRepository.findFirst5ByOrderByUpdatedDesc());
     }
 
-    public EntityModel<Budget> getById(long id) {
-        Budget budget = budgetRepository.findById(id)
+    public Budget getById(long id) {
+        return budgetRepository.findById(id)
                 .orElseThrow(() -> new BudgetNotFoundException(id));
-
-        return budgetModelAssembler.toModel(budget);
     }
 
     public EntityModel<Budget> update(long id, BudgetRequest budgetRequest) {
