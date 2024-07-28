@@ -5,6 +5,7 @@ import com.dave222.budgetapp.common.exceptions.RedundantRequestException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +24,8 @@ public class BudgetService {
         return budgetRepository.save(new Budget(budgetRequest));
     }
 
-    public List<EntityModel<Budget>> getAll() {
-        return budgetRepository.findAll().stream()
-                .map(budgetModelAssembler::toModel)
-                .collect(Collectors.toList());
+    public List<Budget> getAll() {
+        return new ArrayList<>(budgetRepository.findAll());
     }
 
     public List<EntityModel<Budget>> getLatest() {
