@@ -19,11 +19,8 @@ public class BudgetService {
         this.budgetModelAssembler = budgetModelAssembler;
     }
 
-    public EntityModel<Budget> create(BudgetRequest budgetRequest) {
-
-        Budget newBudget = budgetRepository.save(new Budget(budgetRequest));
-
-        return budgetModelAssembler.toModel(newBudget);
+    public Budget create(BudgetRequest budgetRequest) {
+        return budgetRepository.save(new Budget(budgetRequest));
     }
 
     public List<EntityModel<Budget>> getAll() {

@@ -34,7 +34,7 @@ public class BudgetController {
     @PostMapping("/")
     ResponseEntity<EntityModel<Budget>> create(@Valid @RequestBody BudgetRequest budgetRequest) {
 
-        EntityModel<Budget> newBudget = budgetService.create(budgetRequest);
+        EntityModel<Budget> newBudget = budgetModelAssembler.toModel(budgetService.create(budgetRequest));
 
         return ResponseEntity
                 .created(linkTo(methodOn(BudgetController.class).getOne(newBudget.getContent().getId())).toUri())
