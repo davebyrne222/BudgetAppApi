@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -19,13 +20,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RequestMapping("/budget")
 public class BudgetController {
 
-    private final BudgetRepository budgetRepository;
     private final BudgetModelAssembler budgetModelAssembler;
     private final TransactionService transactionService;
     private final BudgetService budgetService;
 
-    BudgetController(BudgetRepository budgetRepository, BudgetModelAssembler budgetModelAssembler, TransactionService transactionService, BudgetService budgetService) {
-        this.budgetRepository = budgetRepository;
+    BudgetController(BudgetModelAssembler budgetModelAssembler, TransactionService transactionService, BudgetService budgetService) {
         this.budgetModelAssembler = budgetModelAssembler;
         this.transactionService = transactionService;
         this.budgetService = budgetService;
@@ -38,7 +37,7 @@ public class BudgetController {
         EntityModel<Budget> newBudget = budgetModelAssembler.toModel(budgetService.create(budgetRequest));
 
         return ResponseEntity
-                .created(linkTo(methodOn(BudgetController.class).getOne(newBudget.getContent().getId())).toUri())
+                .created(linkTo(methodOn(BudgetController.class).getOne(Objects.requireNonNull(newBudget.getContent()).getId())).toUri())
                 .body(newBudget);
     }
 
