@@ -86,7 +86,8 @@ public class BudgetController {
     // Update
     @PutMapping("/{id}")
     ResponseEntity<EntityModel<Budget>> update(@PathVariable Long id, @Valid @RequestBody BudgetRequest newBudget) {
-        return ResponseEntity.ok(budgetService.update(id, newBudget));
+        EntityModel<Budget> budget = budgetModelAssembler.toModel(budgetService.update(id, newBudget));
+        return ResponseEntity.ok(budget);
     }
 
     @PutMapping("/{id}/archive")

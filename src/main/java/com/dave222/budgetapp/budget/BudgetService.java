@@ -2,7 +2,6 @@ package com.dave222.budgetapp.budget;
 
 import com.dave222.budgetapp.budget.enums.State;
 import com.dave222.budgetapp.common.exceptions.RedundantRequestException;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class BudgetService {
                 .orElseThrow(() -> new BudgetNotFoundException(id));
     }
 
-    public EntityModel<Budget> update(long id, BudgetRequest budgetRequest) {
+    public Budget update(long id, BudgetRequest budgetRequest) {
 
         Budget budget = budgetRepository.findById(id)
                 .orElseThrow(() -> new BudgetNotFoundException(id));
@@ -49,7 +48,7 @@ public class BudgetService {
 
         budget.updateFromRequest(budgetRequest);
 
-        return budgetModelAssembler.toModel(budgetRepository.save(budget));
+        return budgetRepository.save(budget);
     }
 
     /**
