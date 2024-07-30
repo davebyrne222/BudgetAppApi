@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -37,7 +38,11 @@ class TransactionController {
     // Read
     @GetMapping("/")
     CollectionModel<EntityModel<Transaction>> getAll() {
-        List<EntityModel<Transaction>> transactions = transactionService.getAll();
+        List<EntityModel<Transaction>> transactions =
+                transactionService.getAll()
+                .stream()
+                .map(transactionModelAssembler::toModel)
+                .collect(Collectors.toList());
 
         return CollectionModel.of(transactions,
                 linkTo(methodOn(TransactionController.class).getAll()).withSelfRel());

@@ -4,6 +4,7 @@ import com.dave222.budgetapp.common.exceptions.RedundantRequestException;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,11 +26,8 @@ public class TransactionService {
     }
 
     // Read
-    public List<EntityModel<Transaction>> getAll() {
-        return transactionRepository.findAll()
-                .stream()
-                .map(transactionModelAssembler::toModel)
-                .collect(Collectors.toList());
+    public List<Transaction> getAll() {
+        return new ArrayList<>(transactionRepository.findAll());
     }
 
     public EntityModel<Transaction> getOne(Long transactionId) {
