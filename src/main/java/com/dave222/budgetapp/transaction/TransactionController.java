@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -16,18 +17,20 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 class TransactionController {
 
     private final TransactionService transactionService;
+    private final TransactionModelAssembler transactionModelAssembler;
 
-    TransactionController(TransactionService transactionService) {
+    TransactionController(TransactionService transactionService, TransactionModelAssembler transactionModelAssembler) {
         this.transactionService = transactionService;
+        this.transactionModelAssembler = transactionModelAssembler;
     }
 
     // Create
     @PostMapping("/")
     ResponseEntity<EntityModel<Transaction>> create(@RequestBody @Valid Transaction transaction) {
-         EntityModel<Transaction> newTransaction = transactionService.create(transaction);
+         EntityModel<Transaction> newTransaction = transactionModelAssembler.toModel(transactionService.create(transaction));
 
         return ResponseEntity
-                .created(linkTo(methodOn(TransactionController.class).getOne(newTransaction.getContent().getId())).toUri())
+                .created(linkTo(methodOn(TransactionController.class).getOne(Objects.requireNonNull(newTransaction.getContent()).getId())).toUri())
                 .body(newTransaction);
     }
 

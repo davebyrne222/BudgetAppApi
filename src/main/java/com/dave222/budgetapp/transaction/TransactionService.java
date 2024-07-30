@@ -15,14 +15,13 @@ public class TransactionService {
     private final TransactionModelAssembler transactionModelAssembler;
 
     TransactionService(TransactionRepository transactionRepository, TransactionModelAssembler transactionModelAssembler) {
-
         this.transactionRepository = transactionRepository;
         this.transactionModelAssembler = transactionModelAssembler;
     }
 
     // Create
-    public EntityModel<Transaction> create(Transaction transaction) {
-        return transactionModelAssembler.toModel(transactionRepository.save(transaction));
+    public Transaction create(Transaction transaction) {
+        return transactionRepository.save(transaction);
     }
 
     // Read
