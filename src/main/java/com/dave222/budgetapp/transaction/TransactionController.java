@@ -59,7 +59,10 @@ class TransactionController {
     // Update
     @PutMapping("/{transactionId}")
     ResponseEntity<EntityModel<Transaction>> update(@PathVariable Long transactionId, @RequestBody @Valid Transaction newTransaction) {
-        return ResponseEntity.ok(transactionService.update(transactionId, newTransaction));
+        return ResponseEntity.ok(
+                transactionModelAssembler.toModel(
+                    transactionService.update(transactionId, newTransaction)
+                ));
     }
 
     // Delete

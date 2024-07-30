@@ -44,7 +44,7 @@ public class TransactionService {
     }
 
     // Update
-    public EntityModel<Transaction> update(Long transactionId, Transaction newTransaction) {
+    public Transaction update(Long transactionId, Transaction newTransaction) {
 
         Transaction transaction = transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new TransactionNotFoundException(transactionId));
@@ -56,7 +56,7 @@ public class TransactionService {
         // Replace old transaction with new:
         newTransaction.setId(transaction.getId());
 
-        return transactionModelAssembler.toModel(transactionRepository.save(newTransaction));
+        return transactionRepository.save(newTransaction);
 
     }
 
