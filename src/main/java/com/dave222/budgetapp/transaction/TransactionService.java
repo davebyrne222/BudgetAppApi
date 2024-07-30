@@ -30,12 +30,9 @@ public class TransactionService {
         return new ArrayList<>(transactionRepository.findAll());
     }
 
-    public EntityModel<Transaction> getOne(Long transactionId) {
-
-        Transaction transaction = transactionRepository.findById(transactionId)
+    public Transaction getOne(Long transactionId) {
+        return transactionRepository.findById(transactionId)
                 .orElseThrow(() -> new TransactionNotFoundException(transactionId));
-
-        return transactionModelAssembler.toModel(transaction);
     }
 
     public List<EntityModel<Transaction>> getAllByBudget(Long budgetId) {
